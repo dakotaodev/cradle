@@ -5,10 +5,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRouter(t *testing.T) {
+	gin.SetMode(gin.TestMode)
 	router := NewRouter()
 
 	w := httptest.NewRecorder()
@@ -16,6 +18,6 @@ func TestRouter(t *testing.T) {
 
 	router.ServeHTTP(w, request)
 
-	assert.Equal(t, 200, w.Code)
-	assert.JSONEq(t, w.Body.String(), `{"status":"ok"}`)
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.JSONEq(t, `{"status": "ok"}`, w.Body.String())
 }
