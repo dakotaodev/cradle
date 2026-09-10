@@ -1,22 +1,15 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"log"
+	"github.com/dakotaodev/cradle/internal/api"
 )
 
-func health(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"method": "GET"})
-}
-
 func main() {
-	router := gin.New()
 
-	router.Use(gin.Logger(), gin.Recovery())
-
-	router.GET("/health", health)
-
-	router.Run(":8080")
+	router := api.NewRouter()
+	if err:= router.Run(); err != nil {
+		log.Fatalf("unable to start the router: %v", err)
+	}
 
 }
