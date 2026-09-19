@@ -8,13 +8,15 @@ The idea behind the SQL migration files is that you essentially can version cont
 This way db changes are traced and repeatable.
 
 The babies table is constructed as such:
-- id (uuid) PK - unique id to identify a baby. UUID can be automatically created using the pgcrypto extension's gen_random_id() to provide the default 
+- id (uuid) PK - unique id to identify a baby. UUID can be automatically created using the pgcrypto extension's gen_random_uuid() to provide the default 
 - full_name (TEXT) - name of baby, required via NOT NULL
 - birth_date (DATE) - optional 
-- created_at (TIMESTAMPTZ) - created date for the record. default value is the current time stamp
+- created_at (TIMESTAMPTZ) - created date for the record. default value is the current time stamp, must be non null if user specified
+- create a constraint on full name that it cannot be a string of whitespace
 
 the general structure of the create statement here is 
 CREATE TABLE [IF NOT EXISTS] table_name (
     col_name col_type column_constraints
     ....
+    table_constraints
 )
