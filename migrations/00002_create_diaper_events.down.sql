@@ -1,0 +1,1 @@
+DROP TABLE diaper_events;

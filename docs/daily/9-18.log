@@ -20,3 +20,19 @@ CREATE TABLE [IF NOT EXISTS] table_name (
     ....
     table_constraints
 )
+
+
+==================
+migrations for create diaper events
+
+diaper_events is modeled as:
+- id UUID PK with auto UUID creation via gen_random_uuid()
+- baby_ID UUID FK that references babies' ID. comes with a constraint for referential integrity
+- occurred_at TIMESTAMPTZ non nullable
+- created_at TIMESTAMPTZ non nullable with default of current TIMESTAMPTZ
+- diaper_type TEXT that must be in the list of valid types (wet, dry, mixed) checked with constraint
+- notes varchar of 500 length, nullable
+
+for this one, we created an index to support the query pattern of diapers by baby id ordered by recency
+CREATE INDEX idx_babies_diaper_events ON diaper_events (baby_id, occurred_at DESC);
+this will create the index on the multi column baby_id and in DESC order by occurred_at
