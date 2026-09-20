@@ -16,6 +16,10 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Println(".env not found; using environment variables")
 	}
+	if os.Getenv("DATABASE_URL") == "" {
+		log.Fatal("DATABASE_URL must be provided.")
+	}
+
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -31,7 +35,7 @@ func main() {
 		log.Fatalf("unable to connect to database: %v", err)
 	}
 
-	defer pool.Config()
+	defer pool.Close()
 
 	router := api.NewRouter()
 	if err := router.Run(); err != nil {
