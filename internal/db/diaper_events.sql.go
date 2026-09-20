@@ -13,9 +13,9 @@ import (
 
 const createDiaperEvent = `-- name: CreateDiaperEvent :one
 INSERT INTO diaper_events (
-    baby_id, diaper_type, occurred_at, created_at, notes
+    baby_id, diaper_type, occurred_at, notes
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4
 )
 RETURNING id, baby_id, occurred_at, created_at, diaper_type, notes
 `
@@ -24,7 +24,6 @@ type CreateDiaperEventParams struct {
 	BabyID     pgtype.UUID
 	DiaperType string
 	OccurredAt pgtype.Timestamptz
-	CreatedAt  pgtype.Timestamptz
 	Notes      string
 }
 
@@ -33,7 +32,6 @@ func (q *Queries) CreateDiaperEvent(ctx context.Context, arg CreateDiaperEventPa
 		arg.BabyID,
 		arg.DiaperType,
 		arg.OccurredAt,
-		arg.CreatedAt,
 		arg.Notes,
 	)
 	var i DiaperEvent
