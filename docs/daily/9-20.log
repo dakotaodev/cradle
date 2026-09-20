@@ -1,0 +1,12 @@
+ - Using sqlc
+
+Incorporated sqlc into cradle to generate type safe code from SQL.
+sqlc allows you to define a yaml file, specifying your queries, schema, db type
+for schema, you can pass a SQL schema definitions or migration files, where the up files will be subsequently applied
+for queries, you can define parameterized SQL queries, where you decorate with a comment to specify the query name and resulting action (return one, many, or exec)
+
+
+- Connecting to pg with pgxpool
+
+pgxpool allows us to create a connection pool with pgxpool.New()
+we verify that that pgxpool's connection is successful with a ping
