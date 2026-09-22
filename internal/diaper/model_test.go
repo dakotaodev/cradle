@@ -6,15 +6,15 @@ import (
 	"time"
 )
 
-func TestDiaperValidation(t *testing.T) {
+func TestCreateInputValidation(t *testing.T) {
 	tests := []struct {
 		name    string
-		input   Diaper
+		input   CreateInput
 		wantErr bool
 	}{
 		{
 			name: "empty BabyID",
-			input: Diaper{
+			input: CreateInput{
 				BabyID:     "",
 				OccurredAt: time.Now(),
 				Type:       TypeDry,
@@ -24,7 +24,7 @@ func TestDiaperValidation(t *testing.T) {
 		},
 		{
 			name: "Notes too long",
-			input: Diaper{
+			input: CreateInput{
 				BabyID:     "m",
 				OccurredAt: time.Now(),
 				Type:       TypeWet,
@@ -34,7 +34,7 @@ func TestDiaperValidation(t *testing.T) {
 		},
 		{
 			name: "Invalid diaper type",
-			input: Diaper{
+			input: CreateInput{
 				BabyID:     "d",
 				OccurredAt: time.Now(),
 				Type:       "moist",
@@ -44,7 +44,7 @@ func TestDiaperValidation(t *testing.T) {
 		},
 		{
 			name: "Occurred in future",
-			input: Diaper{
+			input: CreateInput{
 				BabyID:     "d",
 				OccurredAt: time.Now().Add(time.Hour),
 				Type:       TypeDry,
@@ -54,7 +54,7 @@ func TestDiaperValidation(t *testing.T) {
 		},
 		{
 			name: "Occurred in zero time",
-			input: Diaper{
+			input: CreateInput{
 				BabyID:     "d",
 				OccurredAt: time.Time{},
 				Type:       TypeDry,
@@ -64,7 +64,7 @@ func TestDiaperValidation(t *testing.T) {
 		},
 		{
 			name: "valid diaper",
-			input: Diaper{
+			input: CreateInput{
 				BabyID:     "ID",
 				OccurredAt: time.Now(),
 				Type:       TypeDry,

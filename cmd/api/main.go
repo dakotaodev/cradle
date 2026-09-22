@@ -20,7 +20,6 @@ func main() {
 		log.Fatal("DATABASE_URL must be provided.")
 	}
 
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 

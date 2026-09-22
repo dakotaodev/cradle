@@ -13,14 +13,23 @@ const (
 	TypeMixed Type = "mixed"
 )
 
-type Diaper struct {
+type CreateInput struct {
 	BabyID     string
 	OccurredAt time.Time
 	Type       Type
 	Notes      string
 }
 
-func (d Diaper) Validate() error {
+type Event struct {
+	ID         string
+	BabyID     string
+	OccurredAt time.Time
+	CreatedAt  time.Time
+	Type       Type
+	Notes      string
+}
+
+func (d CreateInput) Validate() error {
 	errs := make([]error, 0)
 
 	if d.BabyID == "" {
