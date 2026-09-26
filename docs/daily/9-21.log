@@ -1,0 +1,5 @@
+- pivoting the diaper model to properly represent caller provided data vs persisted data
+
+Went from the single Diaper model to CreateInput and Event.
+CreateInput represents the data provided by the caller, so it won't need to have created_at or ID as those are values created by the database on persistence.
+This will allow us to create a repository adapter s.t. we can call something like Create(CreateInput) -> Event
