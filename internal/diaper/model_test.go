@@ -27,7 +27,7 @@ func TestCreateInputValidation(t *testing.T) {
 		{
 			name: "Notes too long",
 			input: CreateInput{
-				BabyID:     "m",
+				BabyID:     uuid.NewString(),
 				OccurredAt: time.Now(),
 				Type:       TypeWet,
 				Notes:      strings.Repeat("a", 501),
@@ -37,7 +37,7 @@ func TestCreateInputValidation(t *testing.T) {
 		{
 			name: "Invalid diaper type",
 			input: CreateInput{
-				BabyID:     "d",
+				BabyID:     uuid.NewString(),
 				OccurredAt: time.Now(),
 				Type:       "moist",
 				Notes:      "test",
@@ -47,7 +47,7 @@ func TestCreateInputValidation(t *testing.T) {
 		{
 			name: "Occurred in future",
 			input: CreateInput{
-				BabyID:     "d",
+				BabyID:     uuid.NewString(),
 				OccurredAt: time.Now().Add(time.Hour),
 				Type:       TypeDry,
 				Notes:      "no notes",
@@ -57,7 +57,7 @@ func TestCreateInputValidation(t *testing.T) {
 		{
 			name: "Occurred in zero time",
 			input: CreateInput{
-				BabyID:     "d",
+				BabyID:     uuid.New().String(),
 				OccurredAt: time.Time{},
 				Type:       TypeDry,
 				Notes:      "no notes",
@@ -86,6 +86,57 @@ func TestCreateInputValidation(t *testing.T) {
 				t.Errorf("error not returned for invalid test case: %v", err)
 			}
 
+		})
+	}
+}
+
+func TestToCreateParams(t *testing.T) {
+	test_cases := []struct {
+		name    string
+		input   CreateInput
+		wantErr bool
+	}{
+		{
+			name: "valid input",
+			input: CreateInput{
+				BabyID:     uuid.NewString(),
+				Type:       "wet",
+				OccurredAt: time.Now(),
+				Notes:      "this should pass!",
+			},
+			wantErr: false,
+		},
+		{
+			name: "bad uuid for baby ID",
+			input: CreateInput{
+				BabyID:     "not-an-uuid",
+				Type:       "wet",
+				OccurredAt: time.Now(),
+				Notes:      "disappointment",
+			},
+			wantErr: true,
+		},
+		{
+			name: "invalid diaper type",
+			input: CreateInput{
+				BabyID:     uuid.NewString(),
+				Type:       "fully loaded",
+				OccurredAt: time.Now(),
+				Notes:      "time to size up",
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range test_cases {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := toCreateParams(tc.input)
+			if err != nil && !tc.wantErr {
+				t.Errorf("error received in valid test case: %v", err)
+			}
+			if tc.wantErr && err == nil {
+				t.Errorf("error not returned for invalid test case: %v", err)
+			}
 		})
 	}
 }
