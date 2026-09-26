@@ -4,6 +4,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func TestCreateInputValidation(t *testing.T) {
@@ -65,7 +67,7 @@ func TestCreateInputValidation(t *testing.T) {
 		{
 			name: "valid diaper",
 			input: CreateInput{
-				BabyID:     "ID",
+				BabyID:     uuid.New().String(),
 				OccurredAt: time.Now(),
 				Type:       TypeDry,
 				Notes:      "none",
