@@ -130,12 +130,37 @@ func TestToCreateParams(t *testing.T) {
 
 	for _, tc := range test_cases {
 		t.Run(tc.name, func(t *testing.T) {
-			_, err := toCreateParams(tc.input)
-			if err != nil && !tc.wantErr {
-				t.Errorf("error received in valid test case: %v", err)
+			params, err := toCreateParams(tc.input)
+			if tc.wantErr {
+				if err == nil {
+					t.Fatal("expected an error, got nil")
+				}
+				return
 			}
-			if tc.wantErr && err == nil {
-				t.Errorf("error not returned for invalid test case: %v", err)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			parsedBabyId, err := uuid.Parse(tc.input.BabyID)
+			if err != nil {
+				t.Fatalf("unable to parse BabyID as uuid: %v", err)
+			} else {
+				if params.BabyID.Bytes != parsedBabyId {
+					t.Error("BabyID bytes do not match parsed UUID")
+				}
+			}
+
+			if params.BabyID.Valid != true || params.OccurredAt.Valid != true {
+				t.Error("BabyID and OccurredAt must both have Valid set to true.")
+			}
+			if tc.input.Notes != params.Notes {
+				t.Error("notes field does not match after conversion")
+			}
+			if tc.input.OccurredAt != params.OccurredAt.Time {
+				t.Error("OccurredAt field does not match after conversion")
+			}
+			if string(tc.input.Type) != params.DiaperType {
+				t.Error("diaper type field does not match after conversion")
 			}
 		})
 	}
