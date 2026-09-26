@@ -3,6 +3,8 @@ package diaper
 import (
 	"errors"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Type string
@@ -34,6 +36,10 @@ func (d CreateInput) Validate() error {
 
 	if d.BabyID == "" {
 		errs = append(errs, errors.New("diaper requires a valid BabyID"))
+	}
+	_, err := uuid.Parse(d.BabyID)
+	if err != nil {
+		errs = append(errs, errors.New("diaper ID is not a valid UUID"))
 	}
 	if len(d.Notes) > 500 {
 		errs = append(errs, errors.New("diaper notes cannot exceed 500 characters."))
