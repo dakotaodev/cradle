@@ -144,10 +144,10 @@ func TestToCreateParams(t *testing.T) {
 			parsedBabyId, err := uuid.Parse(tc.input.BabyID)
 			if err != nil {
 				t.Fatalf("unable to parse BabyID as uuid: %v", err)
-			} else {
-				if params.BabyID.Bytes != parsedBabyId {
-					t.Error("BabyID bytes do not match parsed UUID")
-				}
+			}
+
+			if params.BabyID.Bytes != parsedBabyId {
+				t.Error("BabyID bytes do not match parsed UUID")
 			}
 
 			if params.BabyID.Valid != true || params.OccurredAt.Valid != true {
