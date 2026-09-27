@@ -36,4 +36,19 @@ func TestRouter(t *testing.T) {
 	router.ServeHTTP(w, request)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
+
+		request = httptest.NewRequest(
+		http.MethodPost,
+		"/babies/not-uuid/diapers",
+		strings.NewReader(`	{
+			"notes": "this is a note",
+			"occurredAt": "2026-09-26T12:00:00Z",
+			"diaperType": "wet"
+		}`),
+	)
+	request.Header.Set("Content-Type", "application/json")
+	w = httptest.NewRecorder()
+	router.ServeHTTP(w, request)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
