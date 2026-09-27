@@ -20,63 +20,63 @@ type FakeQuerier struct {
 func (f *FakeQuerier) CreateDiaperEvent(ctx context.Context, arg db.CreateDiaperEventParams) (db.DiaperEvent, error) {
 	f.createCalled = true
 	return db.DiaperEvent{
-		ID: pgtype.UUID{},
-		BabyID: arg.BabyID,
+		ID:         pgtype.UUID{},
+		BabyID:     arg.BabyID,
 		DiaperType: arg.DiaperType,
-		Notes: arg.Notes,
+		Notes:      arg.Notes,
 		OccurredAt: arg.OccurredAt,
-		CreatedAt: pgtype.Timestamptz{},
+		CreatedAt:  pgtype.Timestamptz{},
 	}, nil
 }
 
 func TestFakeRepository(t *testing.T) {
 
-	testCases := []struct{
-		name string
-		input CreateInput
+	testCases := []struct {
+		name    string
+		input   CreateInput
 		wantErr bool
 	}{
 		{
 			name: "valid input",
 			input: CreateInput{
-				BabyID: uuid.NewString(),
-				Type: TypeWet,
+				BabyID:     uuid.NewString(),
+				Type:       TypeWet,
 				OccurredAt: time.Now(),
-				Notes: "",
+				Notes:      "",
 			},
 			wantErr: false,
 		},
 		{
 			name: "invalid uuid",
 			input: CreateInput{
-				BabyID: "not-uuid",
-				Type: TypeWet,
+				BabyID:     "not-uuid",
+				Type:       TypeWet,
 				OccurredAt: time.Now(),
-				Notes: "",
+				Notes:      "",
 			},
 			wantErr: true,
 		},
 		{
 			name: "invalid type",
 			input: CreateInput{
-				BabyID: uuid.NewString(),
-				Type: "loaded",
+				BabyID:     uuid.NewString(),
+				Type:       "loaded",
 				OccurredAt: time.Now(),
-				Notes: "",
+				Notes:      "",
 			},
 			wantErr: true,
 		},
 	}
-	
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			fake := FakeQuerier{}	
+			fake := FakeQuerier{}
 			repo := NewRepository(&fake)
-			event, err:= repo.Create(t.Context(), tc.input)
+			event, err := repo.Create(t.Context(), tc.input)
 			if tc.wantErr {
 				if fake.createCalled == true {
 					t.Error("create was called on malformed input. created should not have been reached.")
-				}	
+				}
 				if err == nil {
 					t.Error("error did not occur for invalid input.")
 				}
@@ -89,6 +89,6 @@ func TestFakeRepository(t *testing.T) {
 					t.Errorf("the created event baby IDs do not match")
 				}
 			}
-		})	
+		})
 	}
 }

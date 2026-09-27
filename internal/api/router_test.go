@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -20,4 +21,19 @@ func TestRouter(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.JSONEq(t, `{"status": "ok"}`, w.Body.String())
+
+	request = httptest.NewRequest(
+		http.MethodPost,
+		"/babies/babyId/diapers",
+		strings.NewReader(`	{
+			"notes": "this is a note",
+			"occurredAt": "2026-09-26T12:00:00Z",
+			"diaperType": "wet"
+		}`),
+	)
+	request.Header.Set("Content-Type", "application/json")
+	w = httptest.NewRecorder()
+	router.ServeHTTP(w, request)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }

@@ -7,6 +7,7 @@ func NewRouter() *gin.Engine {
 	router.Use(gin.Logger(), gin.Recovery())
 
 	router.GET("/health", HealthHandler)
+	router.POST("/babies/:babyId/diapers", DiaperHandler)
 
 	return router
 }
