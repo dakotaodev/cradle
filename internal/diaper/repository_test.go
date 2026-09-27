@@ -7,6 +7,7 @@ import (
 
 	"github.com/dakotaodev/cradle/internal/db"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 // For a small test, use a fake db.Querier that records whether CreateDiaperEvent was called.
@@ -18,7 +19,14 @@ type FakeQuerier struct {
 
 func (f *FakeQuerier) CreateDiaperEvent(ctx context.Context, arg db.CreateDiaperEventParams) (db.DiaperEvent, error) {
 	f.createCalled = true
-	return db.DiaperEvent{}, nil
+	return db.DiaperEvent{
+		ID: pgtype.UUID{},
+		BabyID: arg.BabyID,
+		DiaperType: arg.DiaperType,
+		Notes: arg.Notes,
+		OccurredAt: arg.OccurredAt,
+		CreatedAt: pgtype.Timestamptz{},
+	}, nil
 }
 
 func TestFakeRepository(t *testing.T) {
@@ -64,7 +72,7 @@ func TestFakeRepository(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			fake := FakeQuerier{}	
 			repo := NewRepository(&fake)
-			_, err:= repo.Create(t.Context(), tc.input)
+			event, err:= repo.Create(t.Context(), tc.input)
 			if tc.wantErr {
 				if fake.createCalled == true {
 					t.Error("create was called on malformed input. created should not have been reached.")
@@ -72,7 +80,15 @@ func TestFakeRepository(t *testing.T) {
 				if err == nil {
 					t.Error("error did not occur for invalid input.")
 				}
-			}	
+			}
+			if !tc.wantErr {
+				if fake.createCalled != true {
+					t.Error("create was not called on valid input")
+				}
+				if tc.input.BabyID != event.BabyID {
+					t.Errorf("the created event baby IDs do not match")
+				}
+			}
 		})	
 	}
 }

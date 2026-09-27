@@ -54,5 +54,5 @@ func (r *Repository) Create(ctx context.Context, input CreateInput) (Event, erro
 		Notes:      diaperEvent.Notes,
 		CreatedAt:  diaperEvent.CreatedAt.Time,
 		OccurredAt: diaperEvent.OccurredAt.Time,
-	}, err
+	}, nil
 }
