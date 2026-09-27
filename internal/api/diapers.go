@@ -32,6 +32,7 @@ func DiaperHandler(c *gin.Context) {
 
 	if err := input.Validate(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusAccepted, gin.H{"status": "ok"})

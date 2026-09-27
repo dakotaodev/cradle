@@ -24,11 +24,11 @@ func TestRouter(t *testing.T) {
 
 	request = httptest.NewRequest(
 		http.MethodPost,
-		"/babies/babyId/diapers",
+		"/babies/550e8400-e29b-41d4-a716-446655440000/diapers",
 		strings.NewReader(`	{
 			"notes": "this is a note",
 			"occurredAt": "2026-09-26T12:00:00Z",
-			"diaperType": "wet"
+			"diaperType": "wet""
 		}`),
 	)
 	request.Header.Set("Content-Type", "application/json")
