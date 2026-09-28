@@ -37,7 +37,7 @@ func TestRouter(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-		request = httptest.NewRequest(
+	request = httptest.NewRequest(
 		http.MethodPost,
 		"/babies/not-uuid/diapers",
 		strings.NewReader(`	{

@@ -1,11 +1,17 @@
 package api
 
 import (
-	"github.com/dakotaodev/cradle/internal/diaper"
-	"github.com/gin-gonic/gin"
+	"context"
 	"net/http"
 	"time"
+
+	"github.com/dakotaodev/cradle/internal/diaper"
+	"github.com/gin-gonic/gin"
 )
+
+type Repository interface {
+	Create(ctx context.Context, input diaper.CreateInput) (diaper.Event, error)
+}
 
 type DiaperRequest struct {
 	DiaperType string    `form:"diaperType" json:"diaperType" binding:"required"`
@@ -13,27 +19,37 @@ type DiaperRequest struct {
 	OccurredAt time.Time `form:"occurredAt" json:"occurredAt"`
 }
 
-func DiaperHandler(c *gin.Context) {
+func DiaperHandler(repo Repository) gin.HandlerFunc {
 
-	var json DiaperRequest
+	return func(c *gin.Context) {
 
-	if err := c.ShouldBindJSON(&json); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		var json DiaperRequest
+
+		if err := c.ShouldBindJSON(&json); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		babyId := c.Param("babyId")
+
+		input := diaper.CreateInput{
+			BabyID:     babyId,
+			Type:       diaper.Type(json.DiaperType),
+			Notes:      json.Notes,
+			OccurredAt: json.OccurredAt,
+		}
+
+		if err := input.Validate(); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		event, err := repo.Create(c.Request.Context(), input)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusCreated, event)
 	}
-	babyId := c.Param("babyId")
 
-	input := diaper.CreateInput{
-		BabyID:     babyId,
-		Type:       diaper.Type(json.DiaperType),
-		Notes:      json.Notes,
-		OccurredAt: json.OccurredAt,
-	}
-
-	if err := input.Validate(); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusAccepted, gin.H{"status": "ok"})
 }
