@@ -45,3 +45,37 @@ func (q *Queries) CreateDiaperEvent(ctx context.Context, arg CreateDiaperEventPa
 	)
 	return i, err
 }
+
+const listDiaperEventsByBaby = `-- name: ListDiaperEventsByBaby :many
+SELECT id, baby_id, occurred_at, created_at, diaper_type, notes FROM diaper_events
+WHERE baby_id = $1
+ORDER BY occurred_at DESC, id DESC
+LIMIT 20
+`
+
+func (q *Queries) ListDiaperEventsByBaby(ctx context.Context, babyID pgtype.UUID) ([]DiaperEvent, error) {
+	rows, err := q.db.Query(ctx, listDiaperEventsByBaby, babyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []DiaperEvent
+	for rows.Next() {
+		var i DiaperEvent
+		if err := rows.Scan(
+			&i.ID,
+			&i.BabyID,
+			&i.OccurredAt,
+			&i.CreatedAt,
+			&i.DiaperType,
+			&i.Notes,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

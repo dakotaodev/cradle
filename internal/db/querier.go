@@ -6,10 +6,13 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
 	CreateDiaperEvent(ctx context.Context, arg CreateDiaperEventParams) (DiaperEvent, error)
+	ListDiaperEventsByBaby(ctx context.Context, babyID pgtype.UUID) ([]DiaperEvent, error)
 }
 
 var _ Querier = (*Queries)(nil)

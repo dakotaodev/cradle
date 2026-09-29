@@ -29,6 +29,17 @@ func (f *FakeQuerier) CreateDiaperEvent(ctx context.Context, arg db.CreateDiaper
 	}, nil
 }
 
+func (q *FakeQuerier) ListDiaperEventsByBaby(ctx context.Context, babyID pgtype.UUID) ([]db.DiaperEvent, error) {
+	return []db.DiaperEvent{{
+		ID:         pgtype.UUID{},
+		BabyID:     babyID,
+		DiaperType: "wet",
+		Notes:      "wow",
+		OccurredAt: pgtype.Timestamptz{},
+		CreatedAt:  pgtype.Timestamptz{},
+	}}, nil
+}
+
 func TestFakeRepository(t *testing.T) {
 
 	testCases := []struct {

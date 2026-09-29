@@ -5,3 +5,9 @@ INSERT INTO diaper_events (
     $1, $2, $3, $4
 )
 RETURNING *;
+
+-- name: ListDiaperEventsByBaby :many
+SELECT * FROM diaper_events
+WHERE baby_id = $1
+ORDER BY occurred_at DESC, id DESC
+LIMIT 20;
