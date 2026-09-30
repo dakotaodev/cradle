@@ -29,7 +29,8 @@ func (f *FakeQuerier) CreateDiaperEvent(ctx context.Context, arg db.CreateDiaper
 	}, nil
 }
 
-func (q *FakeQuerier) ListDiaperEventsByBaby(ctx context.Context, babyID pgtype.UUID) ([]db.DiaperEvent, error) {
+func (f *FakeQuerier) ListDiaperEventsByBaby(ctx context.Context, babyID pgtype.UUID) ([]db.DiaperEvent, error) {
+	f.createCalled = true
 	return []db.DiaperEvent{{
 		ID:         pgtype.UUID{},
 		BabyID:     babyID,
@@ -102,4 +103,56 @@ func TestFakeRepository(t *testing.T) {
 			}
 		})
 	}
+
+}
+func TestFakeRepositoryListRecent(t *testing.T) {
+
+	testCases := []struct {
+		name    string
+		input   CreateInput
+		wantErr bool
+	}{
+		{
+			name: "valid input",
+			input: CreateInput{
+				BabyID:     uuid.NewString(),
+				Type:       TypeWet,
+				OccurredAt: time.Now(),
+				Notes:      "",
+			},
+			wantErr: false,
+		},
+		{
+			name: "invalid uuid",
+			input: CreateInput{
+				BabyID:     "not-uuid",
+				Type:       TypeWet,
+				OccurredAt: time.Now(),
+				Notes:      "",
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			fake := FakeQuerier{}
+			repo := NewRepository(&fake)
+			_, err := repo.ListRecent(t.Context(), tc.input.BabyID)
+			if tc.wantErr {
+				if fake.createCalled == true {
+					t.Error("create was called on malformed input. created should not have been reached.")
+				}
+				if err == nil {
+					t.Error("error did not occur for invalid input.")
+				}
+			}
+			if !tc.wantErr {
+				if fake.createCalled != true {
+					t.Error("create was not called on valid input")
+				}
+			}
+		})
+	}
+
 }

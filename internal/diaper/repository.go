@@ -47,6 +47,29 @@ func (r *Repository) Create(ctx context.Context, input CreateInput) (Event, erro
 		return Event{}, err
 	}
 
+	return convertDiaperEvent(diaperEvent)
+}
+
+func (r *Repository) ListRecent(ctx context.Context, babyId string) ([]Event, error) {
+
+	parsedBabyId, err := uuid.Parse(babyId)
+	if err != nil {
+		return []Event{}, err
+	}
+	diaperEvents, err := r.db.ListDiaperEventsByBaby(ctx, pgtype.UUID{Bytes: parsedBabyId, Valid: true})
+
+	events := make([]Event, 0)
+	for _, diaperEvent := range diaperEvents {
+		event, err := convertDiaperEvent(diaperEvent)
+		if err != nil {
+			return []Event{}, err
+		}
+		events = append(events, event)
+	}
+	return events, nil
+}
+
+func convertDiaperEvent(diaperEvent db.DiaperEvent) (Event, error) {
 	return Event{
 		ID:         diaperEvent.ID.String(),
 		BabyID:     diaperEvent.BabyID.String(),
