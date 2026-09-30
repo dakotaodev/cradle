@@ -58,6 +58,9 @@ func (r *Repository) ListRecent(ctx context.Context, babyId string) ([]Event, er
 	}
 	diaperEvents, err := r.db.ListDiaperEventsByBaby(ctx, pgtype.UUID{Bytes: parsedBabyId, Valid: true})
 
+	if err != nil {
+		return []Event{}, err
+	}
 	events := make([]Event, 0)
 	for _, diaperEvent := range diaperEvents {
 		event, err := convertDiaperEvent(diaperEvent)
