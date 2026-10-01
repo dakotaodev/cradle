@@ -14,7 +14,8 @@ import (
 //  Check that malformed input returns an error without calling it. Then run go test ./....
 
 type FakeQuerier struct {
-	createCalled bool
+	createCalled     bool
+	listRecentCalled bool
 }
 
 func (f *FakeQuerier) CreateDiaperEvent(ctx context.Context, arg db.CreateDiaperEventParams) (db.DiaperEvent, error) {
@@ -30,7 +31,11 @@ func (f *FakeQuerier) CreateDiaperEvent(ctx context.Context, arg db.CreateDiaper
 }
 
 func (f *FakeQuerier) ListDiaperEventsByBaby(ctx context.Context, babyID pgtype.UUID) ([]db.DiaperEvent, error) {
-	f.createCalled = true
+	f.listRecentCalled = true
+	_, err := uuid.Parse(babyID.String())
+	if err != nil {
+		return []db.DiaperEvent{}, err
+	}
 	return []db.DiaperEvent{{
 		ID:         pgtype.UUID{},
 		BabyID:     babyID,
@@ -140,16 +145,16 @@ func TestFakeRepositoryListRecent(t *testing.T) {
 			repo := NewRepository(&fake)
 			_, err := repo.ListRecent(t.Context(), tc.input.BabyID)
 			if tc.wantErr {
-				if fake.createCalled == true {
-					t.Error("create was called on malformed input. created should not have been reached.")
+				if fake.listRecentCalled == true {
+					t.Error("listRecent was called on malformed input. created should not have been reached.")
 				}
 				if err == nil {
 					t.Error("error did not occur for invalid input.")
 				}
 			}
 			if !tc.wantErr {
-				if fake.createCalled != true {
-					t.Error("create was not called on valid input")
+				if fake.listRecentCalled != true {
+					t.Error("listRecent was not called on valid input")
 				}
 			}
 		})
