@@ -2,6 +2,7 @@ package diaper
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -16,6 +17,7 @@ import (
 type FakeQuerier struct {
 	createCalled     bool
 	listRecentCalled bool
+	listErr          error
 }
 
 func (f *FakeQuerier) CreateDiaperEvent(ctx context.Context, arg db.CreateDiaperEventParams) (db.DiaperEvent, error) {
@@ -32,9 +34,8 @@ func (f *FakeQuerier) CreateDiaperEvent(ctx context.Context, arg db.CreateDiaper
 
 func (f *FakeQuerier) ListDiaperEventsByBaby(ctx context.Context, babyID pgtype.UUID) ([]db.DiaperEvent, error) {
 	f.listRecentCalled = true
-	_, err := uuid.Parse(babyID.String())
-	if err != nil {
-		return []db.DiaperEvent{}, err
+	if f.listErr != nil {
+		return []db.DiaperEvent{}, f.listErr
 	}
 	return []db.DiaperEvent{{
 		ID:         pgtype.UUID{},
@@ -128,9 +129,9 @@ func TestFakeRepositoryListRecent(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "invalid uuid",
+			name: "database error",
 			input: CreateInput{
-				BabyID:     "not-uuid",
+				BabyID:     uuid.NewString(),
 				Type:       TypeWet,
 				OccurredAt: time.Now(),
 				Notes:      "",
@@ -142,14 +143,20 @@ func TestFakeRepositoryListRecent(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			fake := FakeQuerier{}
+			if tc.name == "database error" {
+				fake.listErr = errors.New("database unavailable")
+			}
 			repo := NewRepository(&fake)
 			_, err := repo.ListRecent(t.Context(), tc.input.BabyID)
 			if tc.wantErr {
-				if fake.listRecentCalled == true {
+				if fake.listRecentCalled != true {
 					t.Error("listRecent was called on malformed input. created should not have been reached.")
 				}
 				if err == nil {
 					t.Error("error did not occur for invalid input.")
+				}
+				if !errors.Is(fake.listErr, err) {
+					t.Error("did not match the expected database err")
 				}
 			}
 			if !tc.wantErr {
