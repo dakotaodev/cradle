@@ -10,6 +10,7 @@ func NewRouter(repo Repository) *gin.Engine {
 
 	router.GET("/health", HealthHandler)
 	router.POST("/babies/:babyId/diapers", DiaperHandler(repo))
+	router.GET("/babies/:babyId/diapers", ListRecentHandler(repo))
 
 	return router
 }

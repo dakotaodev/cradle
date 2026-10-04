@@ -2,6 +2,8 @@ package api
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +13,7 @@ import (
 
 	"github.com/dakotaodev/cradle/internal/diaper"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,6 +32,31 @@ func (f FakeRepository) Create(ctx context.Context, input diaper.CreateInput) (d
 		CreatedAt:  time.Now(),
 		Type:       "wet",
 		Notes:      "it's a trap!",
+	}, nil
+}
+
+func (f FakeRepository) ListRecent(ctx context.Context, babyId string) ([]diaper.Event, error) {
+	_, err := uuid.Parse(babyId)
+	if err != nil {
+		return []diaper.Event{}, err
+	}
+	return []diaper.Event{
+		{
+			ID:         "test-id",
+			BabyID:     "test-baby-id",
+			OccurredAt: time.Now(),
+			CreatedAt:  time.Now(),
+			Type:       "wet",
+			Notes:      "it's a trap!",
+		},
+		{
+			ID:         "test-id",
+			BabyID:     "test-baby-id",
+			OccurredAt: time.Now(),
+			CreatedAt:  time.Now(),
+			Type:       "wet",
+			Notes:      "it's a trap!",
+		},
 	}, nil
 }
 
@@ -89,4 +117,20 @@ func TestRouter(t *testing.T) {
 	router.ServeHTTP(w, request)
 
 	assert.Equal(t, http.StatusCreated, w.Code)
+
+	request = httptest.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf("/babies/%s/diapers", uuid.New().String()),
+		nil,
+	)
+	w = httptest.NewRecorder()
+	router.ServeHTTP(w, request)
+
+	assert.Equal(t, w.Code, http.StatusOK)
+
+	var events []diaper.Event
+	if err := json.Unmarshal(w.Body.Bytes(), &events); err != nil {
+		t.Fatal("unable to convert listRecent response as json")
+	}
+	assert.Equal(t, len(events), 2)
 }

@@ -7,10 +7,12 @@ import (
 
 	"github.com/dakotaodev/cradle/internal/diaper"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type Repository interface {
 	Create(ctx context.Context, input diaper.CreateInput) (diaper.Event, error)
+	ListRecent(ctx context.Context, babyId string) ([]diaper.Event, error)
 }
 
 type DiaperRequest struct {
@@ -52,4 +54,26 @@ func DiaperHandler(repo Repository) gin.HandlerFunc {
 		c.JSON(http.StatusCreated, event)
 	}
 
+}
+
+func ListRecentHandler(repo Repository) gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+		babyId := c.Param("babyId")
+
+		_, err := uuid.Parse(babyId)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		events, err := repo.ListRecent(c.Request.Context(), babyId)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+
+		c.JSON(http.StatusOK, events)
+		return
+	}
 }
