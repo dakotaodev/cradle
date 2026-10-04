@@ -71,9 +71,12 @@ func ListRecentHandler(repo Repository) gin.HandlerFunc {
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
 
+		if len(events) == 0 {
+			events = []diaper.Event{}
+		}
 		c.JSON(http.StatusOK, events)
-		return
 	}
 }
