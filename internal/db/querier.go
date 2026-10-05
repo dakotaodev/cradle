@@ -11,7 +11,9 @@ import (
 )
 
 type Querier interface {
+	CreateBaby(ctx context.Context, arg CreateBabyParams) (Baby, error)
 	CreateDiaperEvent(ctx context.Context, arg CreateDiaperEventParams) (DiaperEvent, error)
+	GetBaby(ctx context.Context, id pgtype.UUID) (Baby, error)
 	ListDiaperEventsByBaby(ctx context.Context, babyID pgtype.UUID) ([]DiaperEvent, error)
 }
 

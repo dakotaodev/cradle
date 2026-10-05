@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dakotaodev/cradle/internal/api"
+	"github.com/dakotaodev/cradle/internal/babies"
 	"github.com/dakotaodev/cradle/internal/db"
 	"github.com/dakotaodev/cradle/internal/diaper"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -39,7 +40,8 @@ func main() {
 	defer pool.Close()
 	db := db.New(pool)
 	repo := diaper.NewRepository(db)
-	router := api.NewRouter(repo)
+	babyRepo := babies.NewRepository(db)
+	router := api.NewRouter(repo, babyRepo)
 	if err := router.Run(); err != nil {
 		log.Fatalf("unable to start the router: %v", err)
 	}

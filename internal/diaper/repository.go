@@ -8,11 +8,16 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Repository struct {
-	db db.Querier
+type DiaperQuerier interface { 
+    CreateDiaperEvent(context.Context, db.CreateDiaperEventParams) (db.DiaperEvent, error)
+    ListDiaperEventsByBaby(context.Context, pgtype.UUID) ([]db.DiaperEvent, error)
 }
 
-func NewRepository(database db.Querier) *Repository {
+type Repository struct {
+	db DiaperQuerier
+}
+
+func NewRepository(database DiaperQuerier) *Repository {
 	return &Repository{db: database}
 }
 
