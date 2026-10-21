@@ -15,8 +15,8 @@ import (
 )
 
 type fakeBabyRepository struct {
-	baby babies.Baby
-	err error
+	baby  babies.Baby
+	err   error
 	gotID string
 	calls int
 }
@@ -34,14 +34,14 @@ func (f *fakeBabyRepository) GetBaby(_ context.Context, id string) (babies.Baby,
 func TestGetBabyHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	baby := babies.Baby{
-		ID: "550e8400-e29b-41d4-a716-446655440000",
-		FullName: "Test Baby",
+		ID:        "550e8400-e29b-41d4-a716-446655440000",
+		FullName:  "Test Baby",
 		BirthDate: time.Date(2026, 6, 25, 0, 0, 0, 0, time.UTC),
 		CreatedAt: time.Date(2026, 10, 20, 12, 0, 0, 0, time.UTC),
 	}
 	tests := []struct {
-		name string
-		err error
+		name       string
+		err        error
 		wantStatus int
 	}{
 		{name: "existing baby", wantStatus: http.StatusOK},
@@ -75,4 +75,3 @@ func TestGetBabyHandler(t *testing.T) {
 		})
 	}
 }
-

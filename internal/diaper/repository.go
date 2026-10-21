@@ -8,9 +8,9 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type DiaperQuerier interface { 
-    CreateDiaperEvent(context.Context, db.CreateDiaperEventParams) (db.DiaperEvent, error)
-    ListDiaperEventsByBaby(context.Context, pgtype.UUID) ([]db.DiaperEvent, error)
+type DiaperQuerier interface {
+	CreateDiaperEvent(context.Context, db.CreateDiaperEventParams) (db.DiaperEvent, error)
+	ListDiaperEventsByBaby(context.Context, pgtype.UUID) ([]db.DiaperEvent, error)
 }
 
 type Repository struct {

@@ -60,12 +60,12 @@ func (r *Repository) GetBaby(ctx context.Context, babyId string) (Baby, error) {
 	}
 
 	baby, err := r.db.GetBaby(ctx, pgtype.UUID{Bytes: parseId, Valid: true})
-	
+
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return Baby{}, ErrNotFound
 		}
-		return Baby{}, err 
+		return Baby{}, err
 	}
 	return Baby{
 		ID:        baby.ID.String(),

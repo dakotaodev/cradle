@@ -17,8 +17,8 @@ type BabyRepository interface {
 }
 
 type CreateBabyRequest struct {
-	FullName  string    `json:"fullName" binding:"required"`
-	BirthDate time.Time `json:"birthDate" binding:"required"`
+	FullName  string `json:"fullName" binding:"required"`
+	BirthDate string `json:"birthDate" binding:"required"`
 }
 
 func CreateBabyHandler(repo BabyRepository) gin.HandlerFunc {
@@ -31,9 +31,14 @@ func CreateBabyHandler(repo BabyRepository) gin.HandlerFunc {
 			return
 		}
 
+		birthDate, err := time.Parse(time.DateOnly, json.BirthDate)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 		input := babies.CreateInput{
 			FullName:  json.FullName,
-			BirthDate: json.BirthDate,
+			BirthDate: birthDate,
 		}
 
 		baby, err := repo.CreateBaby(ctx, input)
@@ -53,7 +58,7 @@ func GetBabyHandler(repo BabyRepository) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		babyId := ctx.Param("babyId")
 
-	 	_, err := uuid.Parse(babyId)
+		_, err := uuid.Parse(babyId)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
