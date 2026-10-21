@@ -10,7 +10,7 @@ import (
 
 type BabyQuerier interface {
 	CreateBaby(ctx context.Context, arg db.CreateBabyParams) (db.Baby, error)
-	GetBaby(ctx context.Context, pgtype.UUID string) (db.Baby, error)
+	GetBaby(ctx context.Context, id pgtype.UUID) (db.Baby, error)
 }
 
 type Repository struct {
@@ -21,7 +21,7 @@ func NewRepository(database BabyQuerier) *Repository {
 	return &Repository{db: database}
 }
 
-func (r *Repository) CreateBaby(ctx context.Context, arg db.CreateBabyParams) (db.Baby, error) {
+func (r *Repository) CreateBaby(ctx context.Context, input CreateInput) (Baby, error) {
 	params, err := toCreateParams(input)
 	if err != nil {
 		return Baby{}, nil
@@ -32,7 +32,12 @@ func (r *Repository) CreateBaby(ctx context.Context, arg db.CreateBabyParams) (d
 		return Baby{}, nil
 	}
 
-	return baby, nil
+	return Baby{
+		ID:        baby.ID.String(),
+		FullName:  baby.FullName,
+		BirthDate: baby.BirthDate.Time,
+		CreatedAt: baby.CreatedAt.Time,
+	}, nil
 }
 
 func toCreateParams(input CreateInput) (db.CreateBabyParams, error) {
@@ -46,13 +51,18 @@ func toCreateParams(input CreateInput) (db.CreateBabyParams, error) {
 	}, nil
 }
 
-func (r *Repository) GetBaby(ctx context.Context, id pgtype.UUID) (db.Baby, error) {
+func (r *Repository) GetBaby(ctx context.Context, babyId string) (Baby, error) {
 	parseId, err := uuid.Parse(babyId)
 	if err != nil {
-		return db.Baby{}, err
+		return Baby{}, err
 	}
 
 	baby, err := r.db.GetBaby(ctx, pgtype.UUID{Bytes: parseId, Valid: true})
 
-	return baby, nil
+	return Baby{
+		ID:        baby.ID.String(),
+		FullName:  baby.FullName,
+		BirthDate: baby.BirthDate.Time,
+		CreatedAt: baby.CreatedAt.Time,
+	}, nil
 }

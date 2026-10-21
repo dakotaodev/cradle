@@ -6,13 +6,12 @@ import (
 	"time"
 
 	"github.com/dakotaodev/cradle/internal/babies"
-	"github.com/dakotaodev/cradle/internal/db"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 type BabyRepository interface {
-	CreateBaby(ctx context.Context, input db.CreateBabyParams) (babies.Baby, error)
+	CreateBaby(ctx context.Context, input babies.CreateInput) (babies.Baby, error)
 	GetBaby(ctx context.Context, id string) (babies.Baby, error)
 }
 

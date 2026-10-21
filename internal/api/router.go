@@ -12,6 +12,6 @@ func NewRouter(repo Repository, babyRepo BabyRepository) *gin.Engine {
 	router.POST("/babies/:babyId/diapers", DiaperHandler(repo))
 	router.GET("/babies/:babyId/diapers", ListRecentHandler(repo))
 	router.GET("/babies/:babyId", GetBabyHandler(babyRepo))
-	router.POST("/babies/:babyId", CreateBabyHandler((babyRepo)))
+	router.POST("/babies", CreateBabyHandler((babyRepo)))
 	return router
 }

@@ -63,7 +63,7 @@ func (f FakeRepository) ListRecent(ctx context.Context, babyId string) ([]diaper
 func TestRouter(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	repo := FakeRepository{}
-	router := NewRouter(repo)
+	router := NewRouter(repo, nil)
 
 	w := httptest.NewRecorder()
 	request := httptest.NewRequest(http.MethodGet, "/health", nil)
