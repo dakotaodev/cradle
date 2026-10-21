@@ -52,7 +52,7 @@ func GetBabyHandler(repo BabyRepository) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		babyId := ctx.Param("babyId")
 
-		_, err := uuid.Parse(babyId)
+	 	_, err := uuid.Parse(babyId)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
