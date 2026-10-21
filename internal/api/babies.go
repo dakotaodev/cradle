@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"time"
 
@@ -60,7 +61,12 @@ func GetBabyHandler(repo BabyRepository) gin.HandlerFunc {
 		}
 
 		baby, err := repo.GetBaby(ctx, babyId)
+
 		if err != nil {
+			if errors.Is(err, babies.ErrNotFound) {
+				ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+				return
+			}
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
