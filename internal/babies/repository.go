@@ -24,12 +24,12 @@ func NewRepository(database BabyQuerier) *Repository {
 func (r *Repository) CreateBaby(ctx context.Context, input CreateInput) (Baby, error) {
 	params, err := toCreateParams(input)
 	if err != nil {
-		return Baby{}, nil
+		return Baby{}, err
 	}
 
 	baby, err := r.db.CreateBaby(ctx, params)
 	if err != nil {
-		return Baby{}, nil
+		return Baby{}, err
 	}
 
 	return Baby{
@@ -42,7 +42,7 @@ func (r *Repository) CreateBaby(ctx context.Context, input CreateInput) (Baby, e
 
 func toCreateParams(input CreateInput) (db.CreateBabyParams, error) {
 	if err := input.Validate(); err != nil {
-		return db.CreateBabyParams{}, nil
+		return db.CreateBabyParams{}, err
 	}
 
 	return db.CreateBabyParams{

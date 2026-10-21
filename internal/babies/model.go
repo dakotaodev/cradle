@@ -21,5 +21,8 @@ func (c *CreateInput) Validate() error {
 	if len(c.FullName) == 0 {
 		return errors.New("baby must have a name. cannot be empty")
 	}
+	if c.BirthDate.IsZero() {
+		return errors.New("baby must have a birthdate.")
+	}
 	return nil
 }
