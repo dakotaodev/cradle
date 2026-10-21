@@ -7,7 +7,7 @@ import (
 
 type CreateInput struct {
 	FullName  string
-	BirthDate time.Time
+	BirthDate time.Time 
 }
 
 type Baby struct {

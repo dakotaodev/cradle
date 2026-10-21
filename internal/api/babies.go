@@ -17,7 +17,7 @@ type BabyRepository interface {
 
 type CreateBabyRequest struct {
 	FullName  string    `json:"fullName" binding:"required"`
-	BirthDate time.Time `json:"birthDate"`
+	BirthDate time.Time `json:"birthDate" binding:"required"`
 }
 
 func CreateBabyHandler(repo BabyRepository) gin.HandlerFunc {
