@@ -8,10 +8,10 @@ import (
 	"net/http/httptest"
 	"testing"
 	"time"
-	
-	"github.com/stretchr/testify/assert"
+
 	"github.com/dakotaodev/cradle/internal/babies"
 	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
 type fakeBabyRepository struct {
@@ -71,6 +71,6 @@ func TestGetBabyHandler(t *testing.T) {
     		"birthDate": "2026-06-25",
     		"createdAt": "2026-10-20T12:00:00Z"
 				}`, rec.Body.String())
-			})
+		})
 	}
 }

@@ -22,16 +22,16 @@ type CreateBabyRequest struct {
 }
 
 type BabyResponse struct {
-	ID string `json:"id" binding:"required"`
-	FullName string `json:"fullName"`
-	BirthDate string `json:"birthDate"`
+	ID        string    `json:"id"`
+	FullName  string    `json:"fullName"`
+	BirthDate string    `json:"birthDate"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 
-func prepareResponse(baby babies.Baby) (BabyResponse) {
+func prepareResponse(baby babies.Baby) BabyResponse {
 	return BabyResponse{
-		ID: baby.ID,
-		FullName: baby.FullName,
+		ID:        baby.ID,
+		FullName:  baby.FullName,
 		BirthDate: baby.BirthDate.Format(time.DateOnly),
 		CreatedAt: baby.CreatedAt,
 	}
