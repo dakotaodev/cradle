@@ -21,6 +21,22 @@ type CreateBabyRequest struct {
 	BirthDate string `json:"birthDate" binding:"required"`
 }
 
+type BabyResponse struct {
+	ID string `json:"id" binding:"required"`
+	FullName string `json:"fullName"`
+	BirthDate string `json:"birthDate"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+func prepareResponse(baby babies.Baby) (BabyResponse) {
+	return BabyResponse{
+		ID: baby.ID,
+		FullName: baby.FullName,
+		BirthDate: baby.BirthDate.Format(time.DateOnly),
+		CreatedAt: baby.CreatedAt,
+	}
+}
+
 func CreateBabyHandler(repo BabyRepository) gin.HandlerFunc {
 
 	return func(ctx *gin.Context) {
@@ -48,7 +64,7 @@ func CreateBabyHandler(repo BabyRepository) gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusCreated, baby)
+		ctx.JSON(http.StatusCreated, prepareResponse(baby))
 
 	}
 }
@@ -76,6 +92,6 @@ func GetBabyHandler(repo BabyRepository) gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, baby)
+		ctx.JSON(http.StatusOK, prepareResponse(baby))
 	}
 }

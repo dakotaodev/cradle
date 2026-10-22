@@ -2,14 +2,14 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
-
+	
+	"github.com/stretchr/testify/assert"
 	"github.com/dakotaodev/cradle/internal/babies"
 	"github.com/gin-gonic/gin"
 )
@@ -65,13 +65,12 @@ func TestGetBabyHandler(t *testing.T) {
 			if tt.err != nil {
 				return
 			}
-			var got babies.Baby
-			if err := json.Unmarshal(rec.Body.Bytes(), &got); err != nil {
-				t.Fatalf("decode baby response: %v", err)
-			}
-			if got.ID != baby.ID || got.FullName != baby.FullName || !got.BirthDate.Equal(baby.BirthDate) || !got.CreatedAt.Equal(baby.CreatedAt) {
-				t.Errorf("baby = %+v, want %+v", got, baby)
-			}
-		})
+			assert.JSONEq(t, `{
+    		"id": "550e8400-e29b-41d4-a716-446655440000",
+    		"fullName": "Test Baby",
+    		"birthDate": "2026-06-25",
+    		"createdAt": "2026-10-20T12:00:00Z"
+				}`, rec.Body.String())
+			})
 	}
 }
